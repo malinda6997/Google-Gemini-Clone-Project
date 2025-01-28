@@ -208,13 +208,17 @@
 @media (max-width: 600px) {
  
     .main-bottom input {
-        flex: none;
         width: 150px;
     }
-    /* .main-bottom img {
+    .main-bottom img {
         width: 20px;
+        display: flex;
+        justify-content: flex-end;
+           
 
-    } */
+
+
+    }
         .main-bottom  {
         padding: 0px 10px;
     
@@ -223,10 +227,10 @@
         padding: 5px 10px;
     }
     .search-box div {
-        gap: 5px;
+        
+        padding: 14px;
     }
     .cards {
-        gap: 10px;
         padding: 8px 14px;
     }
 }
