@@ -233,4 +233,7 @@
     .cards {
         padding: 8px 14px;
     }
+    .space {
+      height: 10vh;
+    }
 }
