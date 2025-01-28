@@ -1,5 +1,5 @@
 import React from 'react'
-import './main.css'
+import './Main.css'
 import { useContext } from 'react'
 import { Context } from '../../context/Context'
 
