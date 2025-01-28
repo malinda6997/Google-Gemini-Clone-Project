@@ -1,7 +1,11 @@
 import React from 'react'
 import './main.css'
+import { useContext } from 'react'
+import { Context } from '../../context/Context'
 
 const Main = () => {
+
+    const{onSent,recentPrompt,showResults,loading,resultsData,setInput,input} = useContext(Context)
   return (
     <div className="main">
         <div className="nav">
@@ -9,7 +13,9 @@ const Main = () => {
             <img src="./me.jpg" alt="" />
         </div>
         <div className="main-container">
-          <div className="greet">
+            {!showResults ?
+            <>
+             <div className="greet">
             <p><span>Hello, Malinda</span></p>
             <p>How can I help you today ?</p>
             </div> 
@@ -39,13 +45,35 @@ const Main = () => {
                     <img src="./compass_icon.png" alt="" />
                 </div>
             </div> 
+
+            </>:<div className="results">
+                <div className="result-title">
+                    <img src="./me.jpg" alt="" />
+                    <p>{recentPrompt}</p>
+                </div>
+                <div className="results-data">
+                    <img src="./gemini_icon.png" alt="" />
+                    {
+                    loading? 
+                    <div className="loader">
+                        <hr />
+                        <hr />
+                        <hr />
+                    </div>:
+                     <p dangerouslySetInnerHTML={{ __html:resultsData }}></p>
+                     }
+                   
+                </div>
+            </div>
+            }
+          
             <div className="main-bottom">
                 <div className="search-box">
-                   <input type="text" placeholder="Enter a promt here...." /> 
+                   <input onChange={(e)=>setInput(e.target.value)} value={input} type="text" placeholder="Enter a promt here...." /> 
                    <div>
                     <img src="./gallery_icon.png" alt="" />
                     <img src="./mic_icon.png" alt="" />
-                    <img src="./send_icon.png" alt="" />
+                    <img onClick={()=>onSent()} src="./send_icon.png" alt="" />
 
                    </div>
                 </div>
