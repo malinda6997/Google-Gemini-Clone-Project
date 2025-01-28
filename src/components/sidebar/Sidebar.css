@@ -31,6 +31,7 @@
 .sidebar .recent{
     display: flex;
     flex-direction: column;
+    animation: fadeIn 1.5s;
    
 }
 
@@ -67,4 +68,9 @@
    cursor: pointer;
 
 
+}
+@media (max-width: 600px) {
+    .sidebar{
+        display: none;
+    }
 }
