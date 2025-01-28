@@ -182,3 +182,9 @@
     font-weight: 300;
     line-height: 1.8;
 }
+@media (max-width: 600px) {
+   .cards{
+       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+       padding: 0px 14px;
+   }
+}
