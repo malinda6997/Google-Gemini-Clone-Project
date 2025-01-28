@@ -1,10 +1,14 @@
 import React from 'react'
+import Sidebar from './components/sidebar/Sidebar'
+import Main from './components/main/Main'
+import ContextProvider from './context/Context'
 
 const App = () => {
   return (
-    <div>
-      
-    </div>
+    <ContextProvider>
+    <Sidebar />
+    <Main />
+    </ContextProvider>
   )
 }
 
