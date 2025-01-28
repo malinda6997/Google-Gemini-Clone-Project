@@ -236,4 +236,10 @@
     .space {
       height: 10vh;
     }
+    .bottom-info{
+        font-size: 10px;
+        padding-top: 5px;
+        color: #585858;
+
+    }
 }
