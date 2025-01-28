@@ -66,6 +66,7 @@ const Main = () => {
                 </div>
             </div>
             }
+            <div className="space"></div>
           
             <div className="main-bottom">
                 <div className="search-box">
