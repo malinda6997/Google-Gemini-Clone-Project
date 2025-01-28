@@ -187,5 +187,15 @@
        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
        padding: 0px 14px;
    }
+   .main-bottom input{
+    flex: none;
+    width: 150px;
+   }
+   .main-bottom img{
+      width: 20px;
+   }
+   .search-box{
+       padding: 10px ;
+   }
 
 }
