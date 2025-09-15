@@ -1,15 +1,15 @@
-import React from 'react'
-import Sidebar from './components/sidebar/Sidebar'
-import Main from './components/main/Main'
-import ContextProvider from './context/Context'
+import React from "react";
+import Sidebar from "./components/sidebar/Sidebar";
+import Main from "./components/main/Main";
+import ContextProvider from "./context/Context";
 
 const App = () => {
   return (
     <ContextProvider>
-    <Sidebar />
-    <Main />
+      <Sidebar />
+      <Main />
     </ContextProvider>
-  )
-}
-
-export default App
+  );
+};
+// AIzaSyCJcrx_PsNdh0y1Q-Lr_dBWDljwjyFdCPM (old api key)
+export default App;
