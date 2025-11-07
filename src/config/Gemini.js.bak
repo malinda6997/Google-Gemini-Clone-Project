@@ -1,12 +1,19 @@
-﻿// Direct approach using fetch to match the curl example from Google AI Studio
+// Direct approach using fetch to match the curl example from Google AI Studio
 
-// API key from the environment with proper formatting
+// API key from the environment with proper formatti        // If we get here, we had a successful response and return will exit
+        // No need for a break
+      }
+    }
+    
+    // If we exhausted all retries without success or exception, use the last error
+    if (lastError) {
+      throw lastError;
+    }
 const apiKey = "AIzaSyBwJ4iYw2Vdu3v42W71PvCIw1IieTQe2KQ".trim();
 console.log("Using API key (partial):", apiKey.substring(0, 10) + "...");
 
 // API endpoint directly from the curl example
-const API_ENDPOINT =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 // Model name from the curl example
 const MODEL_NAME = "gemini-2.0-flash";
@@ -26,19 +33,12 @@ async function run(prompt) {
   const MAX_RETRIES = 3;
   // Initial delay in ms before first retry (will increase with backoff)
   const INITIAL_RETRY_DELAY = 2000;
-
+  
   try {
     // Print verbose debugging info
     console.log("API Key Length:", apiKey.length);
-    console.log(
-      "API Key Format Check:",
-      /^AIza[0-9A-Za-z\-_]{35}$/.test(apiKey)
-        ? "Valid format"
-        : "Invalid format"
-    );
-    console.log(
-      `Calling Gemini API with prompt: "${prompt.substring(0, 30)}..."`
-    );
+    console.log("API Key Format Check:", /^AIza[0-9A-Za-z\-_]{35}$/.test(apiKey) ? "Valid format" : "Invalid format");
+    console.log(`Calling Gemini API with prompt: "${prompt.substring(0, 30)}..."`);
 
     // Prepare the request body exactly as shown in the curl example
     const requestBody = {
@@ -46,13 +46,13 @@ async function run(prompt) {
         {
           parts: [
             {
-              text: prompt,
-            },
-          ],
-        },
-      ],
+              text: prompt
+            }
+          ]
+        }
+      ]
     };
-
+    
     // Add generation config if needed
     if (generationConfig) {
       requestBody.generationConfig = generationConfig;
@@ -68,143 +68,103 @@ async function run(prompt) {
       try {
         // Only log "retrying" message if this is a retry attempt
         if (retryCount > 0) {
-          console.log(
-            `Retry attempt ${retryCount}/${MAX_RETRIES} after delay...`
-          );
+          console.log(`Retry attempt ${retryCount}/${MAX_RETRIES} after delay...`);
         }
-
+        
         console.log(`Sending request to ${API_ENDPOINT}...`);
         const response = await fetch(API_ENDPOINT, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "X-goog-api-key": apiKey,
+            'Content-Type': 'application/json',
+            'X-goog-api-key': apiKey
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(requestBody)
         });
 
         console.log("Response status:", response.status);
-
+        
         // Check if the response is rate limited (429)
         if (response.status === 429) {
           const errorText = await response.text();
           console.warn("Rate limit exceeded:", errorText);
-
+          
           if (retryCount < MAX_RETRIES) {
             // Calculate delay with exponential backoff
             const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-            console.log(
-              `Rate limit hit. Waiting for ${delay}ms before retry ${
-                retryCount + 1
-              }/${MAX_RETRIES}`
-            );
-            await new Promise((resolve) => setTimeout(resolve, delay));
+            console.log(`Rate limit hit. Waiting for ${delay}ms before retry ${retryCount + 1}/${MAX_RETRIES}`);
+            await new Promise(resolve => setTimeout(resolve, delay));
             retryCount++;
             continue; // Try again
           } else {
-            throw new Error(
-              `Rate limit exceeded after ${MAX_RETRIES} retries: ${errorText}`
-            );
+            throw new Error(`Rate limit exceeded after ${MAX_RETRIES} retries: ${errorText}`);
           }
-        }
+        } 
         // For other errors
         else if (!response.ok) {
           const errorText = await response.text();
           console.error("API Error Response:", errorText);
-          throw new Error(
-            `API request failed with status ${response.status}: ${errorText}`
-          );
+          throw new Error(`API request failed with status ${response.status}: ${errorText}`);
         }
 
         // Parse the response
         const data = await response.json();
         console.log("API Response data:", data);
-
+        
         // Extract the text from the response based on the structure
-        if (
-          data &&
-          data.candidates &&
-          data.candidates.length > 0 &&
-          data.candidates[0].content &&
-          data.candidates[0].content.parts &&
-          data.candidates[0].content.parts.length > 0
-        ) {
+        if (data && data.candidates && data.candidates.length > 0 && 
+            data.candidates[0].content && data.candidates[0].content.parts && 
+            data.candidates[0].content.parts.length > 0) {
+          
           const responseText = data.candidates[0].content.parts[0].text || "";
-          console.log(
-            "Response text (first 100 chars):",
-            responseText.substring(0, 100)
-          );
+          console.log("Response text (first 100 chars):", responseText.substring(0, 100));
           return responseText;
         } else {
           console.warn("Unexpected response structure:", data);
           throw new Error("Invalid response structure");
         }
-
-        // If we reach here, we had a successful response
-        break;
+        
       } catch (apiError) {
-        console.error(`API error on attempt ${retryCount}:`, apiError);
         lastError = apiError;
-
-        // Only retry on network errors or rate limits
-        if (
-          apiError.message.includes("429") ||
-          apiError.message.toLowerCase().includes("rate") ||
-          apiError.message.toLowerCase().includes("quota") ||
-          apiError.message.toLowerCase().includes("network")
-        ) {
-          if (retryCount < MAX_RETRIES) {
+        console.error(`API error on attempt ${retryCount}:`, apiError);
+        
+        if (retryCount < MAX_RETRIES) {
+          // Only retry on network errors or rate limits
+          if (apiError.message.includes("429") || apiError.message.includes("network")) {
             const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-            console.log(
-              `Error occurred. Waiting for ${delay}ms before retry ${
-                retryCount + 1
-              }/${MAX_RETRIES}`
-            );
-            await new Promise((resolve) => setTimeout(resolve, delay));
+            console.log(`Error occurred. Waiting for ${delay}ms before retry ${retryCount + 1}/${MAX_RETRIES}`);
+            await new Promise(resolve => setTimeout(resolve, delay));
             retryCount++;
             continue;
           }
         }
         throw apiError; // Re-throw for non-retriable errors or after max retries
       }
-    }
-
-    // If we exhausted all retries without success or exception
-    if (lastError) {
-      throw lastError;
+      
+      // If we get here, we had a successful response
+      break;
     }
   } catch (error) {
     console.error("All Gemini API attempts failed:", error);
     console.error("Error details:", {
       name: error.name,
-      message: error.message,
+      message: error.message
     });
 
     // Return a formatted error message with more details
     let errorMsg = "Sorry, I couldn't process your request.";
-
+    
     if (error.message && error.message.toLowerCase().includes("api key")) {
-      errorMsg =
-        "Error: API key issue detected. The API key may be invalid, expired, or not properly formatted. Please check your API key.";
+      errorMsg = "Error: API key issue detected. The API key may be invalid, expired, or not properly formatted. Please check your API key.";
       console.error("API KEY ERROR:", error.message);
     } else if (error.message && error.message.toLowerCase().includes("model")) {
-      errorMsg =
-        "Error: The model specified may not be available with your API key or account permissions.";
-    } else if (
-      error.message &&
-      (error.message.toLowerCase().includes("rate") ||
-        error.message.toLowerCase().includes("quota") ||
-        error.message.toLowerCase().includes("429"))
-    ) {
-      errorMsg =
-        "Error: The API request rate limit has been exceeded. The system will automatically retry after a short delay. This happens because the free Google Gemini API has a limited number of requests allowed per minute.";
+      errorMsg = "Error: The model specified may not be available with your API key or account permissions.";
+    } else if (error.message && (error.message.toLowerCase().includes("rate") || 
+               error.message.toLowerCase().includes("quota") || 
+               error.message.toLowerCase().includes("429"))) {
+      errorMsg = "Error: The API request rate limit has been exceeded. Please wait a minute and try again. This happens because the free Google Gemini API has a limited number of requests allowed per minute.";
       console.error("RATE LIMIT ERROR:", error.message);
-    } else if (
-      error.message &&
-      error.message.toLowerCase().includes("permission")
-    ) {
-      errorMsg =
-        "Error: You may not have permission to use this API or model. Please verify your account settings.";
+    } else if (error.message && error.message.toLowerCase().includes("permission")) {
+      errorMsg = "Error: You may not have permission to use this API or model. Please verify your account settings.";
     } else {
       errorMsg += " Technical details: " + error.message;
     }

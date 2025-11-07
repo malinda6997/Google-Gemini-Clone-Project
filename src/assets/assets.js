@@ -1,33 +1,34 @@
-import history_icon from './history_icon.png'
-import menu_icon from './menu_icon.png'
-import plus_icon from './plus_icon.png'
-import question_icon from './question_icon.png'
-import setting_icon from './setting_icon.png'
-import bulb_icon from './bulb_icon.png'
-import compass_icon from './compass_icon.png'
-import gallery_icon from './gallery_icon.png'
-import mic_icon from './mic_icon.png'
-import user_icon from './user_icon.png'
-import youtube_icon from './youtube_icon.png'
-import message_icon from './message_icon.png'
-import code_icon from './code_icon.png'
-import send_icon from './send_icon.png'
-import gemini_icon from './gemini_icon.png'
+// In Vite, assets in public should be referenced directly with root-relative URLs
+const history_icon = "/history_icon.png";
+const menu_icon = "/menu_icon.png";
+const plus_icon = "/plus_icon.png";
+const question_icon = "/question_icon.png";
+const setting_icon = "/setting_icon.png";
+const bulb_icon = "/bulb_icon.png";
+const compass_icon = "/compass_icon.png";
+const gallery_icon = "/gallery_icon.png";
+const mic_icon = "/mic_icon.png";
+const me = "/me.jpg";
+const youtube_icon = "/youtube_icon.png";
+const message_icon = "/message_icon.png";
+const code_icon = "/code_icon.png";
+const send_icon = "/send_icon.png";
+const gemini_icon = "/gemini_icon.png";
 
 export const assets = {
-    history_icon,
-    menu_icon,
-    plus_icon,
-    question_icon,
-    setting_icon,
-    bulb_icon,
-    compass_icon,
-    gallery_icon,
-    mic_icon,
-    user_icon,
-    youtube_icon,
-    message_icon,
-    code_icon,
-    send_icon,
-    gemini_icon
-}
+  history_icon,
+  menu_icon,
+  plus_icon,
+  question_icon,
+  setting_icon,
+  bulb_icon,
+  compass_icon,
+  gallery_icon,
+  mic_icon,
+  me,
+  youtube_icon,
+  message_icon,
+  code_icon,
+  send_icon,
+  gemini_icon,
+};
