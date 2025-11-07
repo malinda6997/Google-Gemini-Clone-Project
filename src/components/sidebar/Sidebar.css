@@ -3,74 +3,183 @@
     display: inline-flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: #f0f4f9;
-    padding: 26px 15px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 32px 20px;
+    border-right: 1px solid #e8eaed;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .sidebar img{
-    width: 20px;
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease;
 }
+
+.sidebar img:hover{
+    transform: scale(1.1);
+}
+
 .sidebar .menu{
-    display:block ;
+    display: block !important;
     margin-left: 10px;
     cursor: pointer;
+    padding: 12px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    background-color: transparent;
+}
 
+.sidebar .menu:hover{
+    background: #f1f3f4 !important;
+}
+
+.sidebar img.menu{
+    width: 36px !important;
+    height: 36px !important;
+    opacity: 0.9 !important;
+}
+
+.sidebar img.menu:hover{
+    opacity: 1 !important;
+    transform: scale(1.05) !important;
 }
 .sidebar .new-chat{
     margin-top: 50px;
-    display:  inline-flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 15px;
-    background-color: #e6eaf1;
-    border-radius: 50px;
+    gap: 12px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
     font-size: 14px;
-    color: gray;
+    font-weight: 500;
+    color: #ffffff;
     cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
+.sidebar .new-chat:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.sidebar .new-chat img{
+    opacity: 0.9;
 }
 .sidebar .recent{
     display: flex;
     flex-direction: column;
     animation: fadeIn 1.5s;
-   
 }
 
 .sidebar .recent-title {
-    margin-top: 30px;
-    margin-bottom: 20px;
-
-
+    margin-top: 32px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5f6368;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
+
 .sidebar .recent-entry{
     display: flex;
     align-items: start;
-    padding: 10px;
-    gap: 10px;
+    padding: 12px 14px;
+    gap: 12px;
     padding-right: 40px;
-    border-radius: 50px;
-    color: #282828;
+    border-radius: 12px;
+    color: #202124;
     cursor: pointer;
-    
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 400;
 }
-.sidebar .recent-entry:hover {
-    background-color:#e2e6eb ;
 
+.sidebar .recent-entry:hover {
+    background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+    transform: translateX(4px);
 }
 
 .sidebar .bottom{
    display: flex;
    flex-direction: column;
-
-
+   gap: 4px;
 }
+
 .sidebar .bottom-item {
    padding-right: 10px;
    cursor: pointer;
-
-
+   transition: all 0.2s ease;
 }
-@media (max-width: 600px) {
+
+.sidebar .bottom-item:hover {
+   transform: translateX(4px);
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* Mobile Responsive Sidebar */
+@media (max-width: 768px) {
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
     .sidebar{
-        display: none;
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 4px 0 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar.extended {
+        left: 0;
+    }
+    
+    .sidebar .menu {
+        position: fixed;
+        top: 16px;
+        right: 20px;
+        z-index: 1001;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        margin: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar .new-chat {
+        margin-top: 20px;
+    }
+    
+    .sidebar .recent-title {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 260px;
+        left: -260px;
+    }
+    
+    .sidebar .menu {
+        top: 14px;
+        right: 16px;
     }
 }
