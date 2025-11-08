@@ -3,7 +3,7 @@ pipeline {
       
     environment {
         DOCKER_HUB_REPO = 'malinda699/gemini-app'
-        EC2_HOST = '3.83.237.199'
+        EC2_HOST = '54.242.239.70'
         VERSION = "v1.0.${BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKER_HUB_REPO}:${VERSION}"
         LATEST_IMAGE = "${DOCKER_HUB_REPO}:latest"
