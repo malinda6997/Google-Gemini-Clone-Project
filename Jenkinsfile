@@ -2,25 +2,24 @@ pipeline {
     agent any
       
     environment {
-        DOCKER_HUB_REPO = 'malinda699/gemini-app'
         EC2_HOST = '54.242.239.70'
         VERSION = "v1.0.${BUILD_NUMBER}"
-        IMAGE_NAME = "${DOCKER_HUB_REPO}:${VERSION}"
-        LATEST_IMAGE = "${DOCKER_HUB_REPO}:latest"
+        IMAGE_NAME = "gemini-app:${VERSION}"
+        LATEST_IMAGE = "gemini-app:latest"
     }
     
     stages {
-        stage('Create Docker Image') {
+        stage('Build Docker Image on Jenkins') {
             steps {
                 script {
-                    echo "Building Docker image..."
+                    echo "Building Docker image on Jenkins..."
                     echo "Version: ${VERSION}"
                     
-                    // Clean old images first
+                    // Remove old images if they exist
                     sh "docker rmi ${IMAGE_NAME} || true"
                     sh "docker rmi ${LATEST_IMAGE} || true"
                     
-                    // Build new image
+                    // Build new image locally
                     sh "docker build -t ${IMAGE_NAME} ."
                     sh "docker tag ${IMAGE_NAME} ${LATEST_IMAGE}"
                     
@@ -29,73 +28,38 @@ pipeline {
             }
         }
         
-        stage('Push to Docker Hub') {
+        stage('Deploy to EC2') {
             steps {
                 script {
-                    echo "Pushing to Docker Hub..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', 
-                                                    usernameVariable: 'DOCKER_USER', 
-                                                    passwordVariable: 'DOCKER_PASS')]) {
-                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
-                        sh "docker push ${IMAGE_NAME}"
-                        sh "docker push ${LATEST_IMAGE}"
-                        sh "docker logout"
-                    }
-                    echo "✅ Pushed to Docker Hub: ${VERSION}"
-                }
-            }
-        }
-        
-        stage('Pull to Server') {
-            steps {
-                script {
-                    echo "Pulling image to EC2 server..."
                     sshagent(['ec2-ssh-key']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} '
-                                echo "Cleaning old images..."
-                                docker rmi ${LATEST_IMAGE} || true
-                                docker system prune -f
-                                
-                                echo "Pulling latest image..."
-                                docker pull ${LATEST_IMAGE}
-                            '
-                        """
-                    }
-                    echo "✅ Image pulled to server"
-                }
-            }
-        }
-        
-        stage('Create Docker Container') {
-            steps {
-                script {
-                    echo "Creating new container..."
-                    sshagent(['ec2-ssh-key']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} '
-                                echo "Stopping old container..."
+                                echo "Cleaning old container and images..."
                                 docker stop gemini-app || true
                                 docker rm gemini-app || true
+                                docker rmi ${LATEST_IMAGE} || true
                                 
-                                echo "Creating new container..."
+                                echo "Copying new image from Jenkins to EC2..."
+                                docker save ${LATEST_IMAGE} | bzip2 | ssh ubuntu@${EC2_HOST} "bunzip2 | docker load"
+                                
+                                echo "Running new container..."
                                 docker run -d \\
                                     --name gemini-app \\
                                     -p 80:5173 \\
                                     --restart unless-stopped \\
                                     ${LATEST_IMAGE}
+                                
+                                echo "✅ Deployment complete!"
                             '
                         """
                     }
-                    echo "✅ Container created successfully"
                 }
             }
         }
         
-        stage('Deploy to Server') {
+        stage('Verify Deployment') {
             steps {
                 script {
-                    echo "Verifying deployment..."
                     sshagent(['ec2-ssh-key']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} '
@@ -110,14 +74,6 @@ pipeline {
                             '
                         """
                     }
-                    
-                    // Clean up local images
-                    sh "docker rmi ${IMAGE_NAME} || true"
-                    sh "docker rmi ${LATEST_IMAGE} || true"
-                    
-                    echo "✅ Deployment completed successfully!"
-                    echo "🌐 App live at: http://${EC2_HOST}"
-                    echo "📦 Version: ${VERSION}"
                 }
             }
         }
@@ -126,22 +82,12 @@ pipeline {
     post {
         success {
             echo "🎉 CI/CD Pipeline SUCCESS!"
-            echo "🌐 Live URL: http://${EC2_HOST}"
+            echo "🌐 App live at: http://${EC2_HOST}"
             echo "📦 Version: ${VERSION}"
-            echo "⏰ Build time: ${currentBuild.durationString}"
         }
-        
         failure {
-            echo "❌ CI/CD Pipeline FAILED!"
-            echo "🔍 Check logs above for details"
-            
-            // Cleanup on failure
-            script {
-                sh "docker rmi ${IMAGE_NAME} || true"
-                sh "docker rmi ${LATEST_IMAGE} || true"
-            }
+            echo "❌ CI/CD Pipeline FAILED! Check logs above."
         }
-        
         always {
             echo "🧹 Pipeline cleanup completed"
         }
