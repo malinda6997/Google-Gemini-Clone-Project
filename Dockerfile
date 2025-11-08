@@ -1,20 +1,23 @@
-# Simple Node.js Dockerfile
-FROM node:20-alpine
+# Stage 1: build
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+RUN npm ci
 
-# Copy source code
 COPY . .
 
-# Expose port
-EXPOSE 5173
+# creates /dist folder for production
+RUN npm run build    
 
-# Start the development server with host binding
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# Stage 2: serve with nginx
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
