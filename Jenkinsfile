@@ -1,11 +1,6 @@
 pipeline {
     agent any
-    
-    triggers {
-        // Auto trigger on Git main branch changes
-        githook()
-    }
-    
+      
     environment {
         DOCKER_HUB_REPO = 'malinda6997/gemini-app'
         EC2_HOST = '54.242.239.70'
