@@ -15,9 +15,9 @@ pipeline {
                     echo "Building Docker image on Jenkins..."
                     echo "Version: ${VERSION}"
                     
-                    // Remove old images if they exist
-                    sh "docker rmi ${IMAGE_NAME} || true"
-                    sh "docker rmi ${LATEST_IMAGE} || true"
+                    // // Remove old images if they exist
+                    // sh "docker rmi ${IMAGE_NAME} || true"
+                    // sh "docker rmi ${LATEST_IMAGE} || true"
                     
                     // Build new image locally
                     sh "docker build -t ${IMAGE_NAME} ."
