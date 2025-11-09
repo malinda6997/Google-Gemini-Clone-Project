@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = 'malinda6997/gemini-app'
+        DOCKER_IMAGE = 'malinda699/gemini-app'
         EC2_HOST = '3.84.213.89'
     }
     
@@ -17,7 +17,7 @@ pipeline {
         stage('2. Push to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'Docker-Hub-Password', variable: 'DockerHubPassword')]) {
-                    sh 'echo $DockerHubPassword | docker login -u malinda6997 --password-stdin'
+                    sh 'echo $DockerHubPassword | docker login -u malinda699 --password-stdin'
                     sh 'docker push ${DOCKER_IMAGE}'
                     sh 'docker logout'
                 }
