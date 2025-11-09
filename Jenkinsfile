@@ -27,9 +27,9 @@ pipeline {
         
         stage('3. Pull to Server') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                sshagent(['gemini-id']) {
                     sh '''
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_USER@${EC2_HOST} "
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} "
                             docker pull ${DOCKER_IMAGE}
                         "
                     '''
@@ -40,9 +40,9 @@ pipeline {
         
         stage('4. Create Docker Container') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                sshagent(['gemini-id']) {
                     sh '''
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_USER@${EC2_HOST} "
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} "
                             docker stop gemini-app || true
                             docker rm gemini-app || true
                             docker run -d --name gemini-app -p 80:5173 ${DOCKER_IMAGE}
@@ -55,9 +55,9 @@ pipeline {
         
         stage('5. Deploy') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                sshagent(['gemini-id']) {
                     sh '''
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no $SSH_USER@${EC2_HOST} "
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} "
                             docker ps | grep gemini-app
                         "
                     '''
