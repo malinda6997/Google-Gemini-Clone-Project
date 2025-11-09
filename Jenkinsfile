@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'malinda699/gemini-app'
-        EC2_HOST = '3.84.213.89'
+        EC2_HOST = '52.3.185.253'
     }
     
     stages {
