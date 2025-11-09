@@ -2,6 +2,8 @@
 
 A comprehensive React-based Gemini AI clone with complete CI/CD pipeline, containerization, and monitoring setup. This project demonstrates modern web development practices with automated deployment to AWS EC2 using Jenkins, Docker, and Grafana monitoring.
 
+> [!IMPORTANT] > **🚨 AWS Free Tier Notice**: This project is deployed on AWS Free Tier resources. The EC2 instance may be temporarily unavailable due to cost management and free tier limitations. This is a demonstration project showcasing DevOps architecture and deployment practices. For production deployment, dedicated hosting resources would be recommended.
+
 ![React App](images_for_readme/React_app.png)
 
 ## 🚀 Project Overview
@@ -13,7 +15,8 @@ This project is a full-featured Google Gemini AI clone that showcases:
 - **Complete CI/CD Pipeline** using Jenkins
 - **Containerization** with Docker
 - **Cloud Deployment** on AWS EC2
-- **Real-time Monitoring** with Grafana
+- **Comprehensive Monitoring** with CloudWatch & Grafana
+- **Real-time Analytics** and alerting
 - **Infrastructure as Code** approach
 
 ## �️ Tech Stack
@@ -34,7 +37,8 @@ This project is a full-featured Google Gemini AI clone that showcases:
 - **Docker** - Containerization
 - **Jenkins** - CI/CD automation
 - **AWS EC2** - Cloud hosting
-- **Grafana** - Monitoring and analytics
+- **AWS CloudWatch** - Cloud monitoring, logging, and alerting
+- **Grafana** - Monitoring dashboards and analytics
 - **Git & GitHub** - Version control with webhooks
 
 ## 📋 Table of Contents
@@ -44,9 +48,10 @@ This project is a full-featured Google Gemini AI clone that showcases:
 3. [SSH Connection](#-ssh-connection-setup)
 4. [Docker Installation](#-docker-installation)
 5. [Jenkins Setup](#-jenkins-setup)
-6. [Grafana Installation](#-grafana-installation)
-7. [CI/CD Pipeline](#-cicd-pipeline)
-8. [Local Development](#-local-development)
+6. [CloudWatch Monitoring](#-cloudwatch-monitoring)
+7. [Grafana Installation](#-grafana-installation)
+8. [CI/CD Pipeline](#-cicd-pipeline)
+9. [Local Development](#-local-development)
 
 ---
 
@@ -176,6 +181,36 @@ docker ps
 docker images
 ```
 
+### Docker Hub Repository
+
+![Docker Hub Repository](images_for_readme/docker%20hub_repo.png)
+
+**Automated Docker Hub Integration:**
+
+The project demonstrates successful CI/CD integration with Docker Hub:
+
+✅ **Automated Builds** - Jenkins pipeline builds Docker images on every commit  
+✅ **Registry Push** - Images automatically pushed to Docker Hub repository  
+✅ **Version Management** - Each build creates a new image version  
+✅ **Public Repository** - Images available at `malinda699/gemini-app`  
+✅ **Production Ready** - Images ready for deployment across environments  
+
+**Docker Hub Repository Details:**
+- **Repository:** `malinda699/gemini-app`
+- **Visibility:** Public
+- **Auto-build:** Enabled via Jenkins pipeline
+- **Tag Strategy:** Latest + version-specific tags
+- **Size Optimization:** Multi-stage builds for minimal image size
+
+**Pull the Image:**
+```bash
+# Pull latest version
+docker pull malinda699/gemini-app:latest
+
+# Run the pulled image
+docker run -d -p 80:5173 --name gemini-app malinda699/gemini-app:latest
+```
+
 ---
 
 ## 🔧 Jenkins Setup
@@ -250,6 +285,107 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 3. **Pull to Server** - Download on EC2
 4. **Create Container** - Deploy application
 5. **Verify Deployment** - Health check
+
+---
+
+## ☁️ CloudWatch Monitoring
+
+### AWS CloudWatch Integration
+
+AWS CloudWatch provides comprehensive monitoring for your entire infrastructure, giving you insights into application performance, resource utilization, and system health.
+
+### Key CloudWatch Features Used:
+
+#### 📊 **EC2 Monitoring**
+
+- **CPU Utilization** - Track server performance
+- **Memory Usage** - Monitor RAM consumption
+- **Disk I/O** - Storage read/write metrics
+- **Network Traffic** - Bandwidth monitoring
+
+#### 🐳 **Container Monitoring**
+
+- **Docker Container Metrics** - Container resource usage
+- **Application Performance** - Response times and throughput
+- **Error Tracking** - Application logs and exceptions
+
+#### 📈 **Custom Metrics**
+
+- **Application Logs** - Centralized log aggregation
+- **API Response Times** - Gemini API performance
+- **User Interactions** - Chat session analytics
+- **System Health Checks** - Automated monitoring
+
+### CloudWatch Dashboard Configuration
+
+**Key Metrics Tracked:**
+
+```bash
+# EC2 Instance Metrics
+- CPU Utilization (Target: < 80%)
+- Memory Usage (Target: < 85%)
+- Disk Space (Target: < 90%)
+- Network In/Out
+
+# Application Metrics
+- HTTP Response Times
+- Error Rates
+- Active Connections
+- Request Throughput
+
+# Docker Container Metrics
+- Container CPU Usage
+- Container Memory Usage
+- Container Network I/O
+- Container Health Status
+```
+
+### CloudWatch Alarms Setup
+
+**Critical Alerts:**
+
+- **High CPU Usage** - > 85% for 5 minutes
+- **Memory Exhaustion** - > 90% for 3 minutes
+- **Application Downtime** - Health check failures
+- **High Error Rates** - > 5% error rate for 2 minutes
+- **Disk Space** - > 85% disk usage
+
+### CloudWatch Logs Integration
+
+**Log Groups Configured:**
+
+```bash
+# Application Logs
+/aws/ec2/gemini-app/application
+/aws/ec2/gemini-app/access
+/aws/ec2/gemini-app/error
+
+# System Logs
+/aws/ec2/system/messages
+/aws/ec2/docker/containers
+
+# Jenkins Logs
+/aws/ec2/jenkins/build-logs
+/aws/ec2/jenkins/deployment-logs
+```
+
+### Benefits of CloudWatch Integration:
+
+✅ **Real-time Monitoring** - Instant visibility into system performance  
+✅ **Proactive Alerting** - Get notified before issues become critical  
+✅ **Historical Analysis** - Track performance trends over time  
+✅ **Cost Optimization** - Identify resource usage patterns  
+✅ **Automated Scaling** - Trigger actions based on metrics  
+✅ **Centralized Logging** - All logs in one searchable location
+
+### CloudWatch + Grafana Integration
+
+CloudWatch serves as the data source for Grafana dashboards, providing:
+
+- **AWS Native Metrics** - Direct integration with EC2, Docker
+- **Custom Application Metrics** - Business-specific KPIs
+- **Log Analytics** - Searchable log aggregation
+- **Alert Correlation** - Connect metrics with log events
 
 ---
 
@@ -413,34 +549,80 @@ npm run lint         # Run ESLint
 
 ## 🌐 Live Demo
 
-### Production URLs
+> [!WARNING]  
+> **⚠️ Availability Notice**: The live demo runs on AWS Free Tier resources and may be temporarily offline for cost optimization. This is a portfolio demonstration project. All infrastructure code and deployment processes are fully documented below for replication.
+
+### Production URLs _(when active)_
 
 - **Main Application:** `http://34.230.4.231`
 - **Jenkins Dashboard:** `http://34.230.4.231:8080`
 - **Grafana Monitoring:** `http://34.230.4.231:3000`
 
+### Alternative Demo Options
+
+If the live instance is unavailable, you can:
+
+1. **View Screenshots**: All functionality is documented with images in this README
+2. **Local Setup**: Follow the [Local Development](#-local-development) guide
+3. **Video Demo**: [Project walkthrough](https://github.com/malinda6997/Google-Gemini-Clone-Project) _(if available)_
+
 ### GitHub Repository
 
-� **Repository:** [Google-Gemini-Clone-Project](https://github.com/malinda6997/Google-Gemini-Clone-Project)
+🔗 **Repository:** [Google-Gemini-Clone-Project](https://github.com/malinda6997/Google-Gemini-Clone-Project)
 
 ---
 
 ## 📈 Monitoring & Analytics
 
+### Comprehensive Monitoring Stack
+
+This project implements a robust monitoring solution combining **AWS CloudWatch** and **Grafana** for complete observability:
+
+#### 🔍 **CloudWatch (AWS Native)**
+
+- **EC2 Instance Metrics** - CPU, memory, disk, network
+- **Application Logs** - Centralized log aggregation
+- **Custom Metrics** - Business KPIs and performance indicators
+- **Native AWS Integration** - Seamless cloud monitoring
+
+#### 📊 **Grafana (Visualization)**
+
+- **Interactive Dashboards** - Real-time metric visualization
+- **Custom Alerts** - Multi-channel notifications
+- **Historical Analysis** - Trend analysis and reporting
+- **Multi-source Data** - CloudWatch + custom metrics
+
 ### Key Metrics Tracked
 
+#### **CloudWatch Metrics:**
+
+- **Infrastructure Health:** EC2 CPU, memory, disk usage
+- **Network Performance:** Bandwidth, packet loss, latency
+- **Application Logs:** Error tracking, performance logs
+- **System Events:** Service starts/stops, deployments
+
+#### **Grafana Metrics:**
+
 - **Application Performance:** Response times, throughput
-- **Infrastructure Health:** CPU, memory, disk usage
 - **Container Metrics:** Docker container performance
 - **User Analytics:** Page views, session duration
-- **Error Tracking:** Application errors and logs
+- **Business KPIs:** API usage, chat interactions
 
 ### Alerting Setup
 
-- **High CPU Usage:** > 80% for 5 minutes
-- **Memory Usage:** > 90% for 3 minutes
-- **Application Downtime:** Service unavailable
+#### **CloudWatch Alarms:**
+
+- **High CPU Usage:** > 85% for 5 minutes
+- **Memory Exhaustion:** > 90% for 3 minutes
+- **Disk Space Critical:** > 85% disk usage
+- **Application Downtime:** Health check failures
+
+#### **Grafana Alerts:**
+
+- **Response Time Degradation:** > 2s response time
+- **Error Rate Spike:** > 5% error rate
 - **Failed Deployments:** Pipeline failures
+- **Container Restart Events:** Unexpected restarts
 
 ---
 
